@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2020 Koji Yokokawa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 /**
   * Class definition for the Scratch MicroBit More Service.
   * Provides a BLE service to remotely controll Micro:bit from Scratch3.
@@ -143,8 +167,8 @@ MbitMoreService::MbitMoreService(MicroBit &_uBit)
   sharedDataCharHandle = sharedDataChar->getValueHandle();
 
   // Initialize buffers.
-  sharedBuffer[DATA_FORMAT_INDEX] = MBitMoreDataFormat::SHARED_DATA;
-  eventBuffer[DATA_FORMAT_INDEX] = MBitMoreDataFormat::EVENT;
+  sharedBuffer[DATA_FORMAT_INDEX] = MbitMoreService::SHARED_DATA;
+  eventBuffer[DATA_FORMAT_INDEX] = MbitMoreService::EVENT;
 
   // Advertise this service.
   const uint8_t *mbitMoreServices[] = {MBIT_MORE_SERVICE};
@@ -166,7 +190,7 @@ void MbitMoreService::initConfiguration()
   // Initialize pin configuration.
   for (size_t i = 0; i < sizeof(digitalIn) / sizeof(digitalIn[0]); i++)
   {
-    setPullMode(digitalIn[i], PinMode::PullUp);
+    setPullMode(digitalIn[i], MbitMoreService::PullUp);
   }
 
   // Initialize microbit more protocol.
@@ -200,7 +224,7 @@ void MbitMoreService::onDataWritten(const GattWriteCallbackParams *params)
 
   if (params->handle == rxCharacteristicHandle && params->len > 0)
   {
-    if (data[0] == ScratchBLECommand::CMD_DISPLAY_TEXT)
+    if (data[0] == MbitMoreService::CMD_DISPLAY_TEXT)
     {
       char text[params->len];
       memcpy(text, &(data[1]), (params->len) - 1);
@@ -209,7 +233,7 @@ void MbitMoreService::onDataWritten(const GattWriteCallbackParams *params)
       uBit.display.stopAnimation();        // Do not wait the end of current animation as same as the standard extension.
       uBit.display.scrollAsync(mstr, 120); // Interval is corresponding with the standard extension.
     }
-    else if (data[0] == ScratchBLECommand::CMD_DISPLAY_LED)
+    else if (data[0] == MbitMoreService::CMD_DISPLAY_LED)
     {
       uBit.display.stopAnimation();
       for (int y = 1; y < params->len; y++)
@@ -220,42 +244,42 @@ void MbitMoreService::onDataWritten(const GattWriteCallbackParams *params)
         }
       }
     }
-    else if (data[0] == ScratchBLECommand::CMD_PIN)
+    else if (data[0] == MbitMoreService::CMD_PIN)
     {
-      if (data[1] == MBitMorePinCommand::SET_PULL)
+      if (data[1] == MbitMoreService::SET_PULL)
       {
         switch (data[3])
         {
-        case MBitMorePinMode::PullNone:
-          setPullMode(data[2], PinMode::PullNone);
+        case MbitMoreService::PullNone:
+          setPullMode(data[2], MbitMoreService::PullUp);
           break;
-        case MBitMorePinMode::PullUp:
-          setPullMode(data[2], PinMode::PullUp);
+        case MbitMoreService::PullUp:
+          setPullMode(data[2], MbitMoreService::PullUp);
           break;
-        case MBitMorePinMode::PullDown:
-          setPullMode(data[2], PinMode::PullDown);
+        case MbitMoreService::PullDown:
+          setPullMode(data[2], MbitMoreService::PullDown);
           break;
 
         default:
           break;
         }
       }
-      else if (data[1] == MBitMorePinCommand::SET_TOUCH)
+      else if (data[1] == MbitMoreService::SET_TOUCH)
       {
         setPinModeTouch(data[2]);
       }
-      else if (data[1] == MBitMorePinCommand::SET_OUTPUT)
+      else if (data[1] == MbitMoreService::SET_OUTPUT)
       {
         setDigitalValue(data[2], data[3]);
       }
-      else if (data[1] == MBitMorePinCommand::SET_PWM)
+      else if (data[1] == MbitMoreService::SET_PWM)
       {
         // value is read as uint16_t little-endian.
         int value;
         memcpy(&value, &(data[3]), 2);
         setAnalogValue(data[2], value);
       }
-      else if (data[1] == MBitMorePinCommand::SET_SERVO)
+      else if (data[1] == MbitMoreService::SET_SERVO)
       {
         int pinIndex = (int)data[2];
         // angle is read as uint16_t little-endian.
@@ -280,23 +304,23 @@ void MbitMoreService::onDataWritten(const GattWriteCallbackParams *params)
           uBit.io.pin[pinIndex].setServoValue(angle, range, center);
         }
       }
-      else if (data[1] == MBitMorePinCommand::SET_EVENT)
+      else if (data[1] == MbitMoreService::SET_EVENT)
       {
         listenPinEventOn((int)data[2], (int)data[3]);
       }
     }
-    else if (data[0] == ScratchBLECommand::CMD_SHARED_DATA)
+    else if (data[0] == MbitMoreService::CMD_SHARED_DATA)
     {
       // value is read as int16_t little-endian.
       int16_t value;
       memcpy(&value, &(data[2]), 2);
       sharedData[data[1]] = value;
     }
-    else if (data[0] == ScratchBLECommand::CMD_PROTOCOL)
+    else if (data[0] == MbitMoreService::CMD_PROTOCOL)
     {
       mbitMoreProtocol = data[1];
     }
-    else if (data[0] == ScratchBLECommand::CMD_LIGHT_SENSING)
+    else if (data[0] == MbitMoreService::CMD_LIGHT_SENSING)
     {
       setLightSensingDuration(data[1]);
     }
@@ -340,7 +364,7 @@ void MbitMoreService::listenPinEventOn(int pinIndex, int eventType)
   default:
     return;
   }
-  if (eventType == MBitMorePinEventType::NONE)
+  if (eventType == MbitMoreService::NONE)
   {
     uBit.messageBus.ignore(componentID, MICROBIT_EVT_ANY, this, &MbitMoreService::onPinEvent);
     uBit.io.pin[pinIndex].eventOn(MICROBIT_PIN_EVENT_NONE);
@@ -348,15 +372,15 @@ void MbitMoreService::listenPinEventOn(int pinIndex, int eventType)
   else
   {
     uBit.messageBus.listen(componentID, MICROBIT_EVT_ANY, this, &MbitMoreService::onPinEvent, MESSAGE_BUS_LISTENER_DROP_IF_BUSY);
-    if (eventType == MBitMorePinEventType::ON_EDGE)
+    if (eventType == MbitMoreService::ON_EDGE)
     {
       uBit.io.pin[pinIndex].eventOn(MICROBIT_PIN_EVENT_ON_EDGE);
     }
-    else if (eventType == MBitMorePinEventType::ON_PULSE)
+    else if (eventType == MbitMoreService::ON_PULSE)
     {
       uBit.io.pin[pinIndex].eventOn(MICROBIT_PIN_EVENT_ON_PULSE);
     }
-    else if (eventType == MBitMorePinEventType::ON_TOUCH)
+    else if (eventType == MbitMoreService::ON_TOUCH)
     {
       uBit.io.pin[pinIndex].eventOn(MICROBIT_PIN_EVENT_ON_TOUCH);
     }
@@ -563,7 +587,7 @@ void MbitMoreService::updateAnalogValues()
     int value;
     if (uBit.io.pin[analogIn[i]].isInput())
     {
-      uBit.io.pin[analogIn[i]].setPull(PinMode::PullNone);
+      uBit.io.pin[analogIn[i]].setPull((PinMode)0 /*PinMode::PullNone*/);
       // for accuracy, read more than 2 times to get same values continuously
       do
       {
@@ -588,7 +612,7 @@ void MbitMoreService::updateLightSensor()
 {
   if (lightSensingDuration <= 0)
   {
-    uBit.display.setDisplayMode(DisplayMode::DISPLAY_MODE_BLACK_AND_WHITE);
+    uBit.display.setDisplayMode(DISPLAY_MODE_BLACK_AND_WHITE);
     return;
   }
   lightLevel = uBit.display.readLightLevel();
@@ -615,10 +639,24 @@ void MbitMoreService::updateMagnetometer()
   magneticForce[2] = uBit.compass.getZ();
 }
 
-void MbitMoreService::setPullMode(int pinIndex, PinMode pull)
+void MbitMoreService::setPullMode(int pinIndex, MBitMorePinMode_t pull)
 {
-  uBit.io.pin[pinIndex].getDigitalValue(pull);
-  pullMode[pinIndex] = pull;
+    PinMode mode;
+    switch (pull)
+    {
+    case MbitMoreService::PullUp:
+        mode = (PinMode)2; // PinMode::PullUp
+        break;
+    case MbitMoreService::PullDown:
+        mode = (PinMode)1; // PinMode::PullDown
+        break;
+    default:
+        pull = MbitMoreService::PullNone;
+        mode = (PinMode)0; //PinMode::PullNone*/
+        break;
+    }
+    uBit.io.pin[pinIndex].getDigitalValue(mode);
+    pullMode[pinIndex] = pull;
 }
 
 void MbitMoreService::setDigitalValue(int pinIndex, int value)

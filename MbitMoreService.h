@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) 2020 Koji Yokokawa
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #ifndef SCRATCH_MORE_SERVICE_H
 #define SCRATCH_MORE_SERVICE_H
 
@@ -29,6 +53,52 @@ extern const uint8_t MBIT_MORE_ANALOG_IN[];
   */
 class MbitMoreService
 {
+private:
+  enum ScratchBLECommand_t
+  {
+    CMD_PIN_CONFIG = 0x80,
+    CMD_DISPLAY_TEXT = 0x81,
+    CMD_DISPLAY_LED = 0x82,
+    CMD_PROTOCOL = 0x90,
+    CMD_PIN = 0x91,
+    CMD_SHARED_DATA = 0x92,
+    CMD_LIGHT_SENSING = 0x93
+  };
+
+  enum MBitMorePinCommand_t
+  {
+    SET_OUTPUT = 0x01,
+    SET_PWM = 0x02,
+    SET_SERVO = 0x03,
+    SET_PULL = 0x04,
+    SET_EVENT = 0x05,
+    SET_TOUCH = 0x06,
+  };
+
+  enum MBitMorePinMode_t
+  {
+    PullNone = 0,
+    PullUp = 1,
+    PullDown = 2,
+  };
+
+  enum MBitMoreDataFormat_t
+  {
+    MIX_01 = 0x01,
+    MIX_02 = 0x02,
+    MIX_03 = 0x03,
+    SHARED_DATA = 0x11,
+    EVENT = 0x12,
+  };
+
+  enum MBitMorePinEventType_t
+  {
+    NONE = 0,
+    ON_EDGE = 1,
+    ON_PULSE = 2,
+    ON_TOUCH = 3
+  };
+  
 public:
   /**
     * Constructor.
@@ -178,7 +248,7 @@ private:
   /**
    * Current mode of all pins.
    */
-  PinMode pullMode[21];
+  MBitMorePinMode_t pullMode[21];
   
   /**
    * Voltage of the power supply in [mV]
@@ -187,7 +257,7 @@ private:
 
 
   void listenPinEventOn(int pinIndex, int eventType);
-  void setPullMode(int pinIndex, PinMode pull);
+  void setPullMode(int pinIndex, MBitMorePinMode_t pull);
   void setDigitalValue(int pinIndex, int value);
   void setAnalogValue(int pinIndex, int value);
   void setServoValue(int pinIndex, int angle, int range, int center);
@@ -228,50 +298,6 @@ private:
   GattAttribute::Handle_t sensorsCharHandle;
   GattAttribute::Handle_t sharedDataCharHandle;
 
-  enum ScratchBLECommand
-  {
-    CMD_PIN_CONFIG = 0x80,
-    CMD_DISPLAY_TEXT = 0x81,
-    CMD_DISPLAY_LED = 0x82,
-    CMD_PROTOCOL = 0x90,
-    CMD_PIN = 0x91,
-    CMD_SHARED_DATA = 0x92,
-    CMD_LIGHT_SENSING = 0x93
-  };
-
-  enum MBitMorePinCommand
-  {
-    SET_OUTPUT = 0x01,
-    SET_PWM = 0x02,
-    SET_SERVO = 0x03,
-    SET_PULL = 0x04,
-    SET_EVENT = 0x05,
-    SET_TOUCH = 0x06,
-  };
-
-  enum MBitMorePinMode
-  {
-    PullNone = 0,
-    PullUp = 1,
-    PullDown = 2,
-  };
-
-  enum MBitMoreDataFormat
-  {
-    MIX_01 = 0x01,
-    MIX_02 = 0x02,
-    MIX_03 = 0x03,
-    SHARED_DATA = 0x11,
-    EVENT = 0x12,
-  };
-
-  enum MBitMorePinEventType
-  {
-    NONE = 0,
-    ON_EDGE = 1,
-    ON_PULSE = 2,
-    ON_TOUCH = 3
-  };
 };
 
 #endif

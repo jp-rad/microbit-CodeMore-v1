@@ -5,6 +5,7 @@
 
 MbitMoreService.h
 MbitMoreService.cpp
+extension.cpp
 
 **yokobond/pxt-scratch-microbit-more**
 Copyright (c) 2020 Koji Yokokawa
