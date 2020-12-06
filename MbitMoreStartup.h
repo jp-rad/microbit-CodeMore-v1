@@ -2,6 +2,7 @@
 MIT License
 
 Copyright (c) 2020 jp-rad
+Copyright (c) 2020 Koji Yokokawa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -22,11 +23,22 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "MbitMoreStartup.h"
+#ifndef SCRATCH_MORE_STARTUP_H
+#define SCRATCH_MORE_STARTUP_H
 
-int main()
-{
-    // Start Service
-    MbitMore::startMbitMoreService();
+#include "MicroBit.h"
+#include "MbitMoreService.h"
+
+#define UPDATE_PERIOD 11
+#define NOTIFY_PERIOD 101
+
+namespace MbitMore {
+
+    void update();
+    void notifyScratch();
+
+    void startMbitMoreService(p_displayTextCommand  = NULL);
+
 }
 
+#endif  // SCRATCH_MORE_STARTUP_H

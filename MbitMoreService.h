@@ -1,6 +1,7 @@
 /*
 MIT License
 
+Copyright (c) 2020 jp-rad
 Copyright (c) 2020 Koji Yokokawa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -26,6 +27,7 @@ SOFTWARE.
 #define SCRATCH_MORE_SERVICE_H
 
 #include "MicroBit.h"
+#include "MbitCodeMore.h"
 
 #define SCRATCH_MORE_ID 2000
 
@@ -297,6 +299,12 @@ private:
   GattAttribute::Handle_t ioCharHandle;
   GattAttribute::Handle_t sensorsCharHandle;
   GattAttribute::Handle_t sharedDataCharHandle;
+
+public:
+  void assigneCallbackDisplayTextCommand(p_displayTextCommand displayTextCommand);
+
+private:
+  p_displayTextCommand displayTextCommand = NULL;
 
 };
 

@@ -1,6 +1,7 @@
 /*
 MIT License
 
+Copyright (c) 2020 jp-rad
 Copyright (c) 2020 Koji Yokokawa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -230,8 +231,10 @@ void MbitMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(text, &(data[1]), (params->len) - 1);
       text[(params->len) - 1] = '\0';
       ManagedString mstr(text);
-      uBit.display.stopAnimation();        // Do not wait the end of current animation as same as the standard extension.
-      uBit.display.scrollAsync(mstr, 120); // Interval is corresponding with the standard extension.
+      if ((!displayTextCommand) && (mstr.length()>1) && (text[0]=='@') && displayTextCommand(uBit, mstr)) {
+        uBit.display.stopAnimation();        // Do not wait the end of current animation as same as the standard extension.
+        uBit.display.scrollAsync(mstr, 120); // Interval is corresponding with the standard extension.
+      }
     }
     else if (data[0] == MbitMoreService::CMD_DISPLAY_LED)
     {
@@ -889,3 +892,7 @@ const uint8_t MBIT_MORE_IO[] = {0xa6, 0x2d, 0x00, 0x02, 0x1b, 0x34, 0x40, 0x92, 
 const uint8_t MBIT_MORE_ANALOG_IN[] = {0xa6, 0x2d, 0x00, 0x03, 0x1b, 0x34, 0x40, 0x92, 0x8d, 0xee, 0x41, 0x51, 0xf6, 0x3b, 0x28, 0x65};
 const uint8_t MBIT_MORE_SENSORS[] = {0xa6, 0x2d, 0x00, 0x04, 0x1b, 0x34, 0x40, 0x92, 0x8d, 0xee, 0x41, 0x51, 0xf6, 0x3b, 0x28, 0x65};
 const uint8_t MBIT_MORE_SHARED_DATA[] = {0xa6, 0x2d, 0x00, 0x10, 0x1b, 0x34, 0x40, 0x92, 0x8d, 0xee, 0x41, 0x51, 0xf6, 0x3b, 0x28, 0x65};
+
+void MbitMoreService::assigneCallbackDisplayTextCommand(p_displayTextCommand func){
+  displayTextCommand = func;
+}

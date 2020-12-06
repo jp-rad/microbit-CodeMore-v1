@@ -22,11 +22,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "MbitMoreStartup.h"
+#ifndef MBIT_CODE_MORE_H
+#define MBIT_CODE_MORE_H
 
-int main()
-{
-    // Start Service
-    MbitMore::startMbitMoreService();
-}
+#include "MicroBit.h"
 
+typedef int	(*p_displayTextCommand)(MicroBit &, ManagedString &);
+
+#endif
