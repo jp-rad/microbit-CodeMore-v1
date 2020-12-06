@@ -55,7 +55,10 @@ namespace MbitMore {
         
         // Setup
         _pService = new MbitMoreService(uBit);
-        _pService->assigneCallbackDisplayTextCommand(displayTextCommand);
+        if (displayTextCommand!=NULL)
+        {
+            _pService->assigneCallbackDisplayTextCommand(displayTextCommand);
+        }
         create_fiber(update);
         create_fiber(notifyScratch);
         

@@ -26,8 +26,7 @@ SOFTWARE.
 #ifndef SCRATCH_MORE_STARTUP_H
 #define SCRATCH_MORE_STARTUP_H
 
-#include "MicroBit.h"
-#include "MbitMoreService.h"
+#include "MbitCodeMore.h"
 
 #define UPDATE_PERIOD 11
 #define NOTIFY_PERIOD 101
@@ -37,7 +36,7 @@ namespace MbitMore {
     void update();
     void notifyScratch();
 
-    void startMbitMoreService(p_displayTextCommand  = NULL);
+    void startMbitMoreService(p_displayTextCommand displayTextCommand = NULL);
 
 }
 

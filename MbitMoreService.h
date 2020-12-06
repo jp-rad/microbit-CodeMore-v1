@@ -29,6 +29,14 @@ SOFTWARE.
 #include "MicroBit.h"
 #include "MbitCodeMore.h"
 
+#ifndef MBIT_MORE_VERSION
+#define MBIT_MORE_VERSION "v.0.5.0"
+#endif // MBIT_MORE_VERSION
+
+#ifndef MBIT_MORE_FRIENDLY_NAME_SUFFIX
+#define MBIT_MORE_FRIENDLY_NAME_SUFFIX " MORE! "
+#endif // MBIT_MORE_FRIENDLY_NAME_SUFFIX
+
 #define SCRATCH_MORE_ID 2000
 
 #define SCRATCH_MORE_EVT_NOTIFY 1

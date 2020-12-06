@@ -22,11 +22,45 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+#include "MicroBit.h"
 #include "MbitMoreStartup.h"
+#include "MbitCodeMore.h"
+
+// 
+// Microbit uBit
+// https://lancaster-university.github.io/microbit-docs/
+// 
+// ManagedString
+// https://lancaster-university.github.io/microbit-docs/data-types/string/
+// 
+// uBit.display
+// https://lancaster-university.github.io/microbit-docs/ubit/display/
+// 
+
+const ManagedString MY_CMD("@cmd");
+
+// This handler, onDisplayTextCommmand is called, If the display text starts with '@'.
+int onDisplayTextCommand(MicroBit &uBit, ManagedString &text)
+{
+    if (text==MY_CMD)
+    {
+        uBit.display.stopAnimation();
+        // scroll your smiley across the screen, without waiting for it to finish...
+        MicroBitImage smiley("0,255,0,255, 0\n0,255,0,255,0\n0,0,0,0,0\n255,0,0,0,255\n0,255,255,255,0\n");
+        uBit.display.scrollAsync(smiley);
+        // Handled, return zero.
+        return 0;
+    }
+    ManagedString err("Err:");
+    text = err + text;
+    // Unhandled, retrun not zero.
+    return 1;
+}
 
 int main()
 {
     // Start Service
-    MbitMore::startMbitMoreService();
+    //MbitMore::startMbitMoreService();
+    MbitMore::startMbitMoreService(onDisplayTextCommand);
 }
 

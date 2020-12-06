@@ -231,7 +231,7 @@ void MbitMoreService::onDataWritten(const GattWriteCallbackParams *params)
       memcpy(text, &(data[1]), (params->len) - 1);
       text[(params->len) - 1] = '\0';
       ManagedString mstr(text);
-      if ((!displayTextCommand) && (mstr.length()>1) && (text[0]=='@') && displayTextCommand(uBit, mstr)) {
+      if ((NULL==displayTextCommand) || ('@'!=text[0]) || displayTextCommand(uBit, mstr)) {
         uBit.display.stopAnimation();        // Do not wait the end of current animation as same as the standard extension.
         uBit.display.scrollAsync(mstr, 120); // Interval is corresponding with the standard extension.
       }
@@ -773,7 +773,7 @@ void MbitMoreService::onBLEConnected(MicroBitEvent _e)
 {
   uBit.display.stopAnimation(); // To stop display friendly name.
   initConfiguration();
-  uBit.display.scrollAsync("v.0.5.0");
+  uBit.display.scrollAsync(MBIT_MORE_VERSION);
   lightSensingDuration = 255; // Continuous light sensing for GUI v0.4.2
 }
 
@@ -878,7 +878,7 @@ void MbitMoreService::writeSensors()
 
 void MbitMoreService::displayFriendlyName()
 {
-  ManagedString suffix(" MORE! ");
+  ManagedString suffix(MBIT_MORE_FRIENDLY_NAME_SUFFIX);
   uBit.display.scrollAsync(uBit.getName() + suffix, 120);
 }
 
