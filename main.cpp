@@ -23,8 +23,8 @@ SOFTWARE.
 */
 
 #include "MicroBit.h"
-#include "MbitMoreStartup.h"
-#include "MbitCodeMore.h"
+#include "mbitcodemore/MbitMoreStartup.h"
+#include "mbitcodemore/MbitCodeMore.h"
 
 // 
 // Microbit uBit
