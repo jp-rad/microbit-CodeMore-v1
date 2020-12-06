@@ -2,7 +2,6 @@
 MIT License
 
 Copyright (c) 2020 jp-rad
-Copyright (c) 2020 Koji Yokokawa
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -24,88 +23,44 @@ SOFTWARE.
 */
 
 #include "MicroBit.h"
+#include "MbitMoreStartup.h"
+#include "MbitCodeMore.h"
 
-MicroBit uBit;
+// 
+// Microbit uBit
+// https://lancaster-university.github.io/microbit-docs/
+// 
+// ManagedString
+// https://lancaster-university.github.io/microbit-docs/data-types/string/
+// 
+// uBit.display
+// https://lancaster-university.github.io/microbit-docs/ubit/display/
+// 
 
-#include "MbitMoreService.h"
+const ManagedString MY_CMD("@cmd");
 
-#define UPDATE_PERIOD 11
-#define NOTIFY_PERIOD 101
-
-enum SharedDataIndex {
-    //% block="data0"
-    DATA0 = 0,
-    //% block="data1"
-    DATA1 = 1,
-    //% block="data2"
-    DATA2 = 2,
-    //% block="data3"
-    DATA3 = 3,
-};
-
-//% color=#FF9900 weight=95 icon="\uf1b0"
-namespace MbitMore {
-    MbitMoreService* _pService = NULL;
-
-    void update() {
-        while (NULL != _pService) {
-            _pService->update();
-            fiber_sleep(UPDATE_PERIOD);
-        }
+// This handler, onDisplayTextCommmand is called, If the display text starts with '@'.
+int onDisplayTextCommand(MicroBit &uBit, ManagedString &text)
+{
+    if (text==MY_CMD)
+    {
+        uBit.display.stopAnimation();
+        // scroll your smiley across the screen, without waiting for it to finish...
+        MicroBitImage smiley("0,255,0,255, 0\n0,255,0,255,0\n0,0,0,0,0\n255,0,0,0,255\n0,255,255,255,0\n");
+        uBit.display.scrollAsync(smiley);
+        // Handled, return zero.
+        return 0;
     }
-
-    void notifyScratch() {
-        while (NULL != _pService) {
-            // notyfy data to Scratch
-            _pService->notify();
-            fiber_sleep(NOTIFY_PERIOD);
-        }
-    }
-
-    /**
-    * Starts a Scratch extension service.
-    */
-    //%
-    void startMbitMoreService() {
-        if (NULL != _pService) return;
-
-        _pService = new MbitMoreService(uBit);
-        create_fiber(update);
-        create_fiber(notifyScratch);
-    }
-
-    /**
-    * Set shared data value.
-    */
-    //%
-    void setMbitMoreSharedData(SharedDataIndex index, int value) {
-        if (NULL == _pService) return;
-
-        _pService->setSharedData((int)index, value);
-    }
-
-    /**
-     * Get shared data value. 
-     */
-    //%
-    int getMbitMoreSharedData(SharedDataIndex index) {
-        if (NULL == _pService) return 0;
-
-        return _pService->getSharedData((int)index);
-    }    
+    ManagedString err("Err:");
+    text = err + text;
+    // Unhandled, retrun not zero.
+    return 1;
 }
 
 int main()
 {
-    // Initialise the micro:bit runtime.
-    uBit.init();
-    
-    // Insert your code here!
-    MbitMore::startMbitMoreService();
-
-    // If main exits, there may still be other fibers running or registered event handlers etc.
-    // Simply release this fiber, which will mean we enter the scheduler. Worse case, we then
-    // sit in the idle task forever, in a power efficient sleep.
-    release_fiber();
+    // Start Service
+    //MbitMore::startMbitMoreService();
+    MbitMore::startMbitMoreService(onDisplayTextCommand);
 }
 
