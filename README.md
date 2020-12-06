@@ -10,7 +10,7 @@
 1. Click `Program` tab.
 
 1. Import Program.  
-Source URL: https://github.com/jp-rad/microbit-CodeMore.git  
+Source URL: https://github.com/jp-rad/microbit-CodeMore-v1.git  
 Import As: Program  
 Import Name: microbit-CodeMore  
 
