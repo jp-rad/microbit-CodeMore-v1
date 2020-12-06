@@ -64,6 +64,8 @@ int getPowerVoltage(void)
 MbitMoreService::MbitMoreService(MicroBit &_uBit)
     : uBit(_uBit)
 {
+  displayTextCommand = NULL;
+  
   // Calibrate the compass before start bluetooth service.
   if (!uBit.compass.isCalibrated())
   {
