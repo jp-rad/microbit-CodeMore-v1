@@ -312,7 +312,7 @@ public:
   void assigneCallbackDisplayTextCommand(p_displayTextCommand displayTextCommand);
 
 private:
-  p_displayTextCommand displayTextCommand = NULL;
+  p_displayTextCommand displayTextCommand;
 
 };
 
